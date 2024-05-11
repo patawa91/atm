@@ -1,18 +1,24 @@
-version: "1"
+version: '3'
 services:
+  ui:
+    build: ./ui
+    ports:
+      - "3000:3000"
+  service:
+    build: ./service
+    ports:
+      - "8080:8080"
   db:
     container_name: challenge_db
-    build: ./postgres
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      PGDATA: ${PGDATA}
+    build: ./db/postgres
+    env_file:
+      - ./db/.env
     volumes:
-       - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./db/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+      - db:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     restart: unless-stopped
 volumes:
-    db:
-      external: true
+  db:
+    external: true
