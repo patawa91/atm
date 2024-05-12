@@ -11,6 +11,8 @@ CREATE TABLE accounts (
 ALTER TABLE accounts ADD CONSTRAINT verify_type
 CHECK (type IN ('checking', 'savings', 'credit'));
 
+
+
 -- LOAD DATAS
 INSERT INTO accounts 
     (account_number, name, amount, type, credit_limit)
@@ -24,3 +26,13 @@ VALUES
     (7, 'Nancy Checking', 70000, 'checking', NULL),
     (8, 'Nancy Savings', 80000, 'savings', NULL),
     (9, 'Nancy Credit', -90000, 'credit', 100000);
+
+DROP TABLE IF EXISTS account_transactions;
+CREATE TABLE account_transactions (
+    account_number INTEGER NOT NULL,
+    amount INTEGER NOT NULL,
+    type VARCHAR NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (account_number) REFERENCES accounts(account_number)
+);
