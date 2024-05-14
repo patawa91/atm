@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import authRoutes from './src/routes/authRoutes';
 import accountRoutes from './src/routes/accountRoutes'
+import 'express-async-errors';
 // const Joi = require('joi');
 // Import the passport setup for authentication
 import './src/config/passport'

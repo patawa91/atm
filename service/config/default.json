@@ -3,7 +3,7 @@
       "name": "challenge",
       "username": "user",
       "password": "password",
-      "host": "localhost",
+      "host": "db",
       "dialect": "postgres",
       "port": 5432
     },
@@ -11,5 +11,12 @@
       "username": "serviceUser",
       "password": "servicePassword",
       "jwtSecret": "my_jwt_secret"
+    },
+    "withdrawal" : {
+      "maxWithdrawal": 200,
+      "maxDailyWithdrawal": 400
+    },
+    "deposit" : {
+      "maxDeposit": 1000
     }
   }

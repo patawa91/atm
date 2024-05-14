@@ -28,11 +28,12 @@ export class AccountRepository {
         }
     }
 
-    async getTransactions(accountNumber: number, startUtc: Date, endUtc: Date): Promise<IAccountTransaction[]> {
+    async getTransactions(accountNumber: number, startUtc: Date, endUtc: Date, transactionType: string): Promise<IAccountTransaction[]> {
         try {
                 const transactions = await AccountTransaction.findAll({
                     where: {
                         account_number: accountNumber,
+                        type: transactionType,
                         created_at: {
                             [Op.between]: [startUtc, endUtc]
                         }

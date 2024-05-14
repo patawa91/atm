@@ -10,7 +10,13 @@ router.get('/:accountNumber',
     passport.authenticate('jwt', { session: false }),
     accountController.validateAccountNumber,
     accountController.validateUserAccountNumber,
-    accountController.getByAccountNumber
+    async (req: any, res: any, next: any) => {
+        try {
+            await accountController.getByAccountNumber(req, res);
+        } catch (error) {
+            next(error);
+        }
+    }
 );
 
 router.post('/:accountNumber/withdrawal',
@@ -19,7 +25,13 @@ router.post('/:accountNumber/withdrawal',
     accountController.validateUserAccountNumber,
     accountController.validateAmount,
     accountController.validateTimezone,
-    accountController.withdrawal
+    async (req: any, res: any, next: any) => {
+        try {
+            await accountController.withdrawal(req, res);
+        } catch (error) {
+            next(error);
+        }
+    }
 );
 
 router.post('/:accountNumber/deposit',
@@ -27,7 +39,13 @@ router.post('/:accountNumber/deposit',
     accountController.validateAccountNumber,
     accountController.validateUserAccountNumber,
     accountController.validateAmount,
-    accountController.deposit
+    async (req:any, res:any, next:any) => {
+        try {
+            await accountController.deposit(req, res);
+        } catch (error) {
+            next(error);
+        }
+    }
 );
 
 export default router;

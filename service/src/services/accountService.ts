@@ -10,9 +10,8 @@ export class AccountService {
     }
 
     async withdrawal(accountNumber: number, amount: number, timezone: string) {
-        
         const account = await this.accountRepository.getAccountByAccountNumber(accountNumber);
-        this.accountTransactionValidatorService.validateWithdraw(account, amount, timezone);
+        await this.accountTransactionValidatorService.validateWithdraw(account, amount, timezone);
 
         const newAccountAmount = account!.amount - amount;
         
@@ -21,7 +20,7 @@ export class AccountService {
 
     async deposit(accountNumber: number, amount: number) {
         const account = await this.accountRepository.getAccountByAccountNumber(accountNumber);
-        this.accountTransactionValidatorService.validateDeposit(account, amount);
+        await this.accountTransactionValidatorService.validateDeposit(account, amount);
 
         const newAccountAmount = account!.amount + amount;
         await this.updateAccountAmount(accountNumber, newAccountAmount, amount, 'deposit');
