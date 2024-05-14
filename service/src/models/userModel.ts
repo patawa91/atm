@@ -1,11 +1,9 @@
-import { User } from './user';
+import { IUser } from './iUser';
 
-export class UserModel implements User {
-    id: number;
-    username: string;
+export class UserModel implements IUser {
+    accountNumber: number;
 
-    constructor(id: number, username: string) {
-        this.id = id;
-        this.username = username;
+    constructor(accountNumber: number) {
+        this.accountNumber = accountNumber;
     }
 }

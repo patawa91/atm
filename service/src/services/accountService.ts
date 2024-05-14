@@ -1,23 +1,34 @@
+import { IAccount } from '../models/account';
 import { AccountRepository } from '../repositories/accountRepository';
+import { AccountTransactionValidatorService } from './accountTransactionValidatorService';
 
 export class AccountService {
-    constructor(private readonly accountRepository: AccountRepository) {}
+    constructor(private readonly accountRepository: AccountRepository, private readonly accountTransactionValidatorService: AccountTransactionValidatorService) {}
 
-    async getById(id: number) {
-        return await this.accountRepository.getAccountById(id);
+    async getAccountByAccountNumber(accountNumber: number): Promise<IAccount | null> {
+        return await this.accountRepository.getAccountByAccountNumber(accountNumber) as IAccount | null;
     }
 
-    async withdrawal(id: number, amount: number) {
+    async withdrawal(accountNumber: number, amount: number, timezone: string) {
         
-        const account = await this.accountRepository.getAccountById(id);
-        // call validation
-        // move to validator
-        if(!account) {
-            throw new Error('Account not found during withdrawal');
-        }
+        const account = await this.accountRepository.getAccountByAccountNumber(accountNumber);
+        this.accountTransactionValidatorService.validateWithdraw(account, amount, timezone);
 
-        const newAccountAmout = account.amount - amount;
-        await this.accountRepository.updateAccountAmount(id, newAccountAmout);
-        await this.accountRepository.insertTransaction(id, amount);
+        const newAccountAmount = account!.amount - amount;
+        
+        await this.updateAccountAmount(accountNumber, newAccountAmount, amount, 'withdrawal');
+    }
+
+    async deposit(accountNumber: number, amount: number) {
+        const account = await this.accountRepository.getAccountByAccountNumber(accountNumber);
+        this.accountTransactionValidatorService.validateDeposit(account, amount);
+
+        const newAccountAmount = account!.amount + amount;
+        await this.updateAccountAmount(accountNumber, newAccountAmount, amount, 'deposit');
+    }
+
+    private async updateAccountAmount(accountNumber: number, newAccountAmount: number, transactionAmount: number, transactionType: 'withdrawal' | 'deposit') {
+        await this.accountRepository.updateAccountAmount(accountNumber, newAccountAmount);
+        await this.accountRepository.insertTransaction(accountNumber, transactionAmount, transactionType);
     }
 }

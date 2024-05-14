@@ -1,22 +1,33 @@
 import express, { Router } from 'express';
 import passport from 'passport';
+import container from '../IoC/container';
 import { AccountController } from '../controllers/accountController';
-import { AccountService } from '../services/accountService';
-import { AccountRepository } from '../repositories/accountRepository';
-const router: Router = express.Router();
-const accountController = new AccountController(new AccountService(new AccountRepository()));
 
-router.get('/:id',
+const router: Router = express.Router();
+const accountController = container.resolve('accountController') as AccountController;
+
+router.get('/:accountNumber',
     passport.authenticate('jwt', { session: false }),
-    accountController.validateId,
-    accountController.getById
+    accountController.validateAccountNumber,
+    accountController.validateUserAccountNumber,
+    accountController.getByAccountNumber
 );
 
-router.post('/:id/withdrawal',
+router.post('/:accountNumber/withdrawal',
     passport.authenticate('jwt', { session: false }),
-    accountController.validateId,
+    accountController.validateAccountNumber,
+    accountController.validateUserAccountNumber,
     accountController.validateAmount,
+    accountController.validateTimezone,
     accountController.withdrawal
+);
+
+router.post('/:accountNumber/deposit',
+    passport.authenticate('jwt', { session: false }),
+    accountController.validateAccountNumber,
+    accountController.validateUserAccountNumber,
+    accountController.validateAmount,
+    accountController.deposit
 );
 
 export default router;

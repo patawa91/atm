@@ -1,0 +1,15 @@
+{
+    "database": {
+      "name": "challenge",
+      "username": "user",
+      "password": "password",
+      "host": "localhost",
+      "dialect": "postgres",
+      "port": 5432
+    },
+    "auth" : {
+      "username": "serviceUser",
+      "password": "servicePassword",
+      "jwtSecret": "my_jwt_secret"
+    }
+  }

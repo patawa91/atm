@@ -1,27 +1,28 @@
 import { AccountService } from '../src/services/accountService';
 import { AccountRepository } from '../src/repositories/accountRepository';
-import { Account } from '../src/models/account';
 import { IAccount } from '../src/models/account';
+import { AccountTransactionValidatorService } from '../src/services/accountTransactionValidatorService';
+
 describe('AccountService', () => {
     let accountService: AccountService;
     let mockAccountRepository: jest.Mocked<AccountRepository>;
+    let mockaccountTransactionValidatorService: jest.Mocked<AccountTransactionValidatorService>;
 
     beforeEach(() => {
         mockAccountRepository = {
-            getAccountById: jest.fn()
-        } as any;
-        accountService = new AccountService(mockAccountRepository);
-    });
+            getAccountByAccountNumber: jest.fn<Promise<IAccount | null>, [number]>(),
+            updateAccountAmount: jest.fn(),
+            getTransactions: jest.fn(),
+            insertTransaction: jest.fn()
+        } as jest.Mocked<AccountRepository>;
 
-    it('should return null if account not found', async () => {
-        mockAccountRepository.getAccountById.mockResolvedValue(null);
+        mockaccountTransactionValidatorService = {
+            validateWithdraw: jest.fn(),
+            validateDeposit: jest.fn()
+        } as unknown as jest.Mocked<AccountTransactionValidatorService>;
+        
+        accountService = new AccountService(mockAccountRepository, mockaccountTransactionValidatorService);
 
-        const account = await accountService.getById(1);
-
-        expect(account).toBeNull();
-    });
-
-    it('should return account if account found', async () => {
         const mockAccount: IAccount = {
             account_number: 1,
             name: 'test',
@@ -29,10 +30,50 @@ describe('AccountService', () => {
             type: 'savings',
             credit_limit: 0
         };
-        mockAccountRepository.getAccountById.mockResolvedValue(Promise.resolve(mockAccount));
+        mockAccountRepository.getAccountByAccountNumber.mockResolvedValue(mockAccount);
+    });
 
-        const account = await accountService.getById(1);
+    describe('with getAccountById', () => {
+        it('should return null if account not found', async () => {
+            mockAccountRepository.getAccountByAccountNumber.mockResolvedValue(null);
+    
+            const account = await accountService.getAccountByAccountNumber(1);
+    
+            expect(account).toBeNull();
+        });
+    
+        it('should return account if account found', async () => {
+            const account = await accountService.getAccountByAccountNumber(1);
+    
+            expect(account).not.toBeNull();
+        });
+    });
 
-        expect(account).not.toBeNull();
+    describe('with withdrawal', () => {
+        it('it should call transaction validator validate', async () => {
+            await accountService.withdrawal(1, 10, 'America/New_York');
+            expect(mockaccountTransactionValidatorService.validateWithdraw).toHaveBeenCalled();
+        });
+
+        it('it should update account amount and insert transaction', async () => {
+            await accountService.withdrawal(1, 10, 'America/New_York');
+    
+            expect(mockAccountRepository.updateAccountAmount).toHaveBeenCalledWith(1, 90);
+            expect(mockAccountRepository.insertTransaction).toHaveBeenCalledWith(1, 10, 'withdrawal');
+        });
+    });
+
+    describe('with deposit', () => {
+        it('it should call transaction validator validate', async () => {
+            await accountService.deposit(1, 10);
+            expect(mockaccountTransactionValidatorService.validateDeposit).toHaveBeenCalled();
+        });
+
+        it('it should update account amount and insert transaction', async () => {
+            await accountService.deposit(1, 10);
+    
+            expect(mockAccountRepository.updateAccountAmount).toHaveBeenCalledWith(1, 110);
+            expect(mockAccountRepository.insertTransaction).toHaveBeenCalledWith(1, 10, 'deposit');
+        });
     });
 });
