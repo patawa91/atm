@@ -11,8 +11,14 @@
 
 #### Running website and service on your machine if neccessary
 * For the Service
+  * Navigate to `root/service` and do an `npm install` if you haven't already.
+  * Make sure you've alreay created your docker volume called `db` from above.
+  * If you haven't yet created and have your db running navigate to `root/service` and call `docker-compose up -d db`.
   * Go to `root/service/config/default.json` and change `database.host` to `localhost` instead of `db`. `db` is used in the docker network, but you'll need `localhost` on your machine.
   * In the terminal navigate to the `root/service` folder and run `npm start`. This will expose service on http://localhost:3000.
+  
+* For UI  
+  * Navigate to `root/ui` and do an `npm install` if you haven't already.
   * In another terminal navigate to `root/ui` folder and run `npm start`. Site should be exposed on http://localhost:8080.
 
 #### Running service unit tests
