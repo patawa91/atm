@@ -32,7 +32,6 @@ describe('AccountTransactionValidatorService', () => {
         mockAccountRepository = {
             getAccountByAccountNumber: jest.fn(),
             updateAccountAmount: jest.fn(),
-            // getTransactions: jest.fn<Promise<IAccountTransaction[]>, [number, Date, Date]>(),
             getTransactions: jest.fn().mockResolvedValue([]),
             insertTransaction: jest.fn()
         } as jest.Mocked<AccountRepository>;
