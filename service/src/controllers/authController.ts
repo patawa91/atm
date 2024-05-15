@@ -14,7 +14,7 @@ export const login = (req : Request, res: Response, next: NextFunction): void =>
         }
         if (!user) { 
             console.log('No user found');
-            return res.redirect('/login');
+            return res.status(401).json({ message: 'Authentication failed' });
         }
 
         // user was authenticated so create and return token
