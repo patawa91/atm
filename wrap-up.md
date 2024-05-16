@@ -27,7 +27,7 @@
 * Navigate to `root/service` in your terminal and run `npm run test`
 
 ### Were there any pieces of this project that you were not able to complete that you'd like to mention?
-* Not that I know of.
+* No
 
 ### If you were to continue building this out, what would you like to add next?
 * Add some type of secondary authentication besides account number. For example PIN number, two factor, etc. It would be required to get a token.
